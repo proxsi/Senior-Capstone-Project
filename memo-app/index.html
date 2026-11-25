@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>轻记 · 我的备忘录</title>
+  <meta name="description" content="一个简单的网页备忘录，支持新增、编辑、删除、搜索、标签、置顶和完成标记。">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📝</text></svg>">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">📝</span>
+        <div>
+          <h1>轻记</h1>
+          <p class="brand-sub">把脑子里的事，先放进来</p>
+        </div>
+      </div>
+
+      <div class="search-wrap">
+        <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"></circle>
+          <line x1="16.5" y1="16.5" x2="21" y2="21"></line>
+        </svg>
+        <input type="search" id="search" placeholder="搜索标题、内容或标签…" autocomplete="off">
+        <button type="button" class="search-clear" id="search-clear" title="清空搜索" hidden>×</button>
+      </div>
+
+      <button type="button" class="btn btn-primary" id="btn-new">
+        <span aria-hidden="true">＋</span> 新建备忘
+      </button>
+    </div>
+  </header>
+
+  <main class="container">
+    <div class="toolbar">
+      <div class="filters" id="tag-filters" role="tablist" aria-label="按标签筛选"></div>
+      <p class="stat" id="stat"></p>
+    </div>
+
+    <section class="notes" id="notes" aria-live="polite"></section>
+
+    <div class="empty" id="empty" hidden>
+      <div class="empty-emoji" aria-hidden="true">🗒️</div>
+      <h2 id="empty-title">还没有备忘录</h2>
+      <p id="empty-desc">点右上角的「新建备忘」，记下第一件事吧。</p>
+      <button type="button" class="btn btn-primary" id="btn-empty-new">新建备忘</button>
+    </div>
+  </main>
+
+  <!-- 编辑弹窗 -->
+  <dialog class="editor" id="editor">
+    <form id="editor-form" novalidate>
+      <div class="editor-head">
+        <h2 id="editor-title">新建备忘</h2>
+        <button type="button" class="icon-btn" id="btn-close" title="关闭">×</button>
+      </div>
+
+      <label class="field">
+        <span class="field-label">标题</span>
+        <input type="text" id="in-title" maxlength="80" placeholder="要做什么？" required>
+        <span class="field-error" id="title-error" hidden>标题不能为空</span>
+      </label>
+
+      <label class="field">
+        <span class="field-label">内容</span>
+        <textarea id="in-content" rows="6" maxlength="2000" placeholder="补充一点细节…"></textarea>
+      </label>
+
+      <label class="field">
+        <span class="field-label">标签 <em>用逗号或空格分隔，最多 5 个</em></span>
+        <input type="text" id="in-tags" maxlength="60" placeholder="例如：学习, 生活">
+      </label>
+
+      <div class="editor-foot">
+        <span class="editor-hint">Ctrl / ⌘ + Enter 保存</span>
+        <div class="editor-actions">
+          <button type="button" class="btn btn-ghost" id="btn-cancel">取消</button>
+          <button type="submit" class="btn btn-primary">保存</button>
+        </div>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <template id="note-template">
+    <article class="note">
+      <div class="note-top">
+        <button type="button" class="check" data-action="toggle-done" title="标记完成">
+          <span class="check-box" aria-hidden="true"></span>
+        </button>
+        <h3 class="note-title" data-action="edit"></h3>
+        <div class="note-tools">
+          <button type="button" class="icon-btn pin" data-action="toggle-pin" title="置顶">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M9 3h6l-1 6 4 4v2H6v-2l4-4-1-6z"></path>
+              <line x1="12" y1="15" x2="12" y2="21"></line>
+            </svg>
+          </button>
+          <button type="button" class="icon-btn" data-action="edit" title="编辑">✎</button>
+          <button type="button" class="icon-btn danger" data-action="delete" title="删除">🗑</button>
+        </div>
+      </div>
+      <p class="note-body" data-action="edit"></p>
+      <div class="note-tags"></div>
+      <footer class="note-foot">
+        <time class="note-time"></time>
+        <span class="badge-done">已完成</span>
+      </footer>
+    </article>
+  </template>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
