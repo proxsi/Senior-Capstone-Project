@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Qiang Heritage Digital Human: A Retrieval-Grounded Conversational System</title>
+<style>
+  @page {
+    size: A4;
+    margin: 20mm 19mm 18mm 19mm;
+  }
+
+  :root {
+    --ink: #1a1a1a;
+    --muted: #555;
+    --accent: #7a1f1f;
+    --rule: #cfcfcf;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+  body {
+    margin: 0;
+    color: var(--ink);
+    background: #fff;
+    font-family: "Times New Roman", "Songti SC", "SimSun", serif;
+    font-size: 10.7pt;
+    line-height: 1.72;
+    text-align: justify;
+    hyphens: none;
+  }
+
+  .page {
+    max-width: 172mm;
+    margin: 0 auto;
+    padding: 4mm 0 10mm;
+  }
+
+  /* ---------- cover ---------- */
+  .cover {
+    page-break-after: always;
+    padding-top: 32mm;
+    text-align: center;
+  }
+  .cover .kicker {
+    font-size: 9.5pt;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 9mm;
+  }
+  .cover h1 {
+    font-size: 21pt;
+    line-height: 1.35;
+    margin: 0 0 5mm;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+  }
+  .cover .subtitle {
+    font-size: 11.5pt;
+    color: var(--muted);
+    margin: 0 auto 14mm;
+    max-width: 140mm;
+    line-height: 1.6;
+  }
+  .cover .rule {
+    width: 58mm;
+    height: 2px;
+    background: var(--accent);
+    margin: 0 auto 14mm;
+  }
+  .meta {
+    margin: 0 auto;
+    width: 118mm;
+    border-collapse: collapse;
+    font-size: 10pt;
+  }
+  .meta td {
+    padding: 2.4mm 3mm;
+    border-bottom: 1px solid var(--rule);
+    text-align: left;
+  }
+  .meta td:first-child {
+    width: 38mm;
+    color: var(--muted);
+    letter-spacing: 0.04em;
+  }
+  .cover .note {
+    margin: 18mm auto 0;
+    width: 140mm;
+    font-size: 9pt;
+    color: var(--muted);
+    line-height: 1.6;
+    text-align: center;
+  }
+
+  /* ---------- headings ---------- */
+  h2 {
+    font-size: 13pt;
+    margin: 8mm 0 3mm;
+    padding-bottom: 1.6mm;
+    border-bottom: 1px solid var(--rule);
+    page-break-after: avoid;
+  }
+  h2 .num { color: var(--accent); margin-right: 2.5mm; }
+  h3 {
+    font-size: 10.9pt;
+    margin: 5.5mm 0 2mm;
+    page-break-after: avoid;
+  }
+  h3 .num { color: var(--muted); margin-right: 2mm; font-weight: 400; }
+
+  p { margin: 0 0 2.6mm; }
+  p.first { text-indent: 0; }
+
+  /* ---------- abstract ---------- */
+  .abstract {
+    margin: 0 0 7mm;
+    padding: 5mm 6mm;
+    border-left: 2.5px solid var(--accent);
+    background: #faf8f6;
+  }
+  .abstract h2 {
+    font-size: 10.5pt;
+    border: 0;
+    margin: 0 0 2mm;
+    padding: 0;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .abstract p { font-size: 10.2pt; line-height: 1.68; margin-bottom: 2mm; }
+  .keywords {
+    font-size: 9.6pt;
+    color: #333;
+    margin: 2mm 0 0;
+  }
+  .keywords span { color: var(--muted); }
+
+  /* ---------- figures ---------- */
+  figure {
+    margin: 5mm 0 5.5mm;
+    page-break-inside: avoid;
+    text-align: center;
+  }
+  figure img {
+    display: block;
+    max-width: 100%;
+    max-height: 108mm;
+    margin: 0 auto;
+    border: 1px solid #d8d8d8;
+  }
+  figure img.tall { max-height: 118mm; }
+  figcaption {
+    margin-top: 2.2mm;
+    font-size: 9pt;
+    line-height: 1.55;
+    color: #333;
+    text-align: left;
+  }
+  figcaption b { color: var(--ink); }
+
+  /* ---------- tables ---------- */
+  table.data {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 3.5mm 0 5mm;
+    font-size: 8.9pt;
+    line-height: 1.5;
+    page-break-inside: auto;
+  }
+  table.data thead { display: table-header-group; }
+  table.data tr { page-break-inside: avoid; }
+  table.data caption {
+    caption-side: top;
+    text-align: left;
+    font-size: 9pt;
+    color: #333;
+    padding-bottom: 1.8mm;
+  }
+  table.data th {
+    background: #f2efec;
+    border: 1px solid #c9c9c9;
+    padding: 1.7mm 2mm;
+    text-align: left;
+    font-weight: 700;
+  }
+  table.data td {
+    border: 1px solid #d5d5d5;
+    padding: 1.6mm 2mm;
+    vertical-align: top;
+    text-align: left;
+  }
+  table.data td.code, table.data th.code { width: 34%; }
+  code, .mono {
+    font-family: Consolas, "Courier New", monospace;
+    font-size: 8.8pt;
+  }
+
+  /* ---------- pipeline diagram ---------- */
+  .pipeline {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin: 4mm 0 5mm;
+    page-break-inside: avoid;
+    font-size: 8.8pt;
+    line-height: 1.45;
+  }
+  .pipeline .stage {
+    flex: 1;
+    border: 1px solid #c9c9c9;
+    border-radius: 2px;
+    padding: 2.6mm 2.4mm;
+    background: #fbfaf9;
+  }
+  .pipeline .stage strong {
+    display: block;
+    font-size: 9.2pt;
+    margin-bottom: 1.2mm;
+  }
+  .pipeline .stage em {
+    font-style: normal;
+    color: var(--muted);
+    font-size: 8.4pt;
+  }
+  .pipeline .arrow {
+    width: 8mm;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+    font-size: 12pt;
+  }
+
+  /* ---------- blockquote / observation ---------- */
+  .observation {
+    margin: 3mm 0 4mm;
+    padding: 3mm 4mm;
+    background: #faf8f6;
+    border-left: 2px solid #b98d8d;
+    font-size: 9.6pt;
+    color: #303030;
+  }
+
+  ul, ol { margin: 0 0 3mm 5.5mm; padding: 0; }
+  li { margin-bottom: 1.4mm; }
+
+  /* ---------- references ---------- */
+  .references { font-size: 9.2pt; }
+  .references li { margin-bottom: 2mm; }
+  .references .mono { word-break: break-all; }
+
+  /* ---------- signature ---------- */
+  .signature {
+    margin-top: 6mm;
+    padding-top: 4mm;
+    border-top: 1px solid var(--rule);
+    page-break-inside: avoid;
+    text-align: right;
+    font-size: 10pt;
+    line-height: 1.9;
+  }
+  .signature .name {
+    font-size: 11pt;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .signature .cn {
+    font-family: "Microsoft YaHei", "SimHei", "Songti SC", "SimSun", sans-serif;
+    font-weight: 700;
+  }
+  .signature .date { color: var(--muted); font-size: 9.5pt; }
+
+  .pagebreak { page-break-before: always; }
+  .avoid { page-break-inside: avoid; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ==================== COVER ==================== -->
+<section class="cover">
+  <div class="kicker">Course Paper &middot; NE2301</div>
+  <h1>Qiang Heritage Digital Human:<br>A Retrieval-Grounded Conversational System for Intangible Cultural Heritage</h1>
+  <div class="rule"></div>
+  <p class="subtitle">
+    Technical implementation report on a Chinese-language, three-tier question-answering
+    application that combines a curated heritage knowledge base, live web search, and a
+    persona-conditioned language model.
+  </p>
+
+  <table class="meta">
+    <tr><td>Course</td><td>NE2301</td></tr>
+    <tr><td>Author</td><td>NE2301 ShengruiDu StevenDu 杜晟瑞</td></tr>
+    <tr><td>Student ID</td><td>202384014024</td></tr>
+    <tr><td>Submission</td><td>November 2026</td></tr>
+    <tr><td>Artefacts</td><td>Annotated source code, interface screenshots, this paper (HTML and PDF)</td></tr>
+  </table>
+
+  <p class="note">
+    All screenshots in this paper are unmodified captures of the running system. The user
+    interface of the deployed application is Chinese; interface text therefore remains Chinese in
+    the figures, while the surrounding prose, captions, and analysis are in English.
+  </p>
+</section>
+
+<!-- ==================== ABSTRACT ==================== -->
+<section class="abstract">
+  <h2>Abstract</h2>
+  <p>
+    This paper documents the technical implementation of a question-answering system for Qiang
+    intangible cultural heritage. The system pairs a React single-page client with a FastAPI
+    service and answers visitor questions through a three-tier routing policy: a curated knowledge
+    base of embedded heritage chunks is consulted first, a live web-search model is consulted when
+    the local evidence is weak, and the language model answers from its own parameters only as a
+    last resort. Each answer is returned with its provenance, a confidence value, and a fallback
+    flag, so that the interface can display where the statement came from. The written knowledge is
+    stored as semantic chunks with subject, entity type, topic tag, relation text, and an embedding
+    vector; chunks are produced either by a human curator through a structured form or by a language
+    model that rewrites unstructured text into a JSON array which the operator edits before
+    committing. A digital-human presenter reflects conversation state through pre-rendered video
+    clips, and synthesized speech is streamed back as base64 MP3. The paper describes the actual
+    implementation as submitted, including its storage model, its prompt construction, its provider
+    adapters, and its measured-by-inspection costs, and it states the limitations of the design
+    rather than claiming unverified performance.
+  </p>
+  <p class="keywords"><span>Keywords:</span> retrieval-augmented generation; intangible cultural heritage; digital human; FastAPI; vector search; provenance-aware answering</p>
+</section>
+
+<!-- ==================== 1 ==================== -->
+<h2><span class="num">1</span>Introduction</h2>
+<p>
+  Intangible cultural heritage is transmitted through people: through the explanation a craftsman
+  gives while working, through the stories told during a festival, through the corrections an elder
+  makes when a younger person uses the wrong word. Digitising such knowledge is therefore not only a
+  retrieval problem. A useful heritage assistant must answer accurately, admit when it does not
+  know, and speak in a register that a visitor finds natural rather than administrative.
+</p>
+<p>
+  Large language models satisfy the third requirement easily and the first two poorly. A model
+  asked about a specific Qiang embroidery pattern will produce fluent prose whether or not it has
+  ever seen a reliable description of that pattern. The risk is asymmetric: a visitor cannot tell a
+  confident fabrication from a curated fact unless the interface exposes its evidence. This project
+  was built around that observation. Instead of treating the model as the source of truth, the
+  system treats it as a writer that receives evidence from a curated store or from a live search,
+  and it reports which of those sources was used for every answer.
+</p>
+<p>
+  The scope of the implementation is deliberately narrow and end-to-end. It supports one
+  conversational persona, one heritage domain, one storage schema, and a small set of provider
+  integrations. The contribution documented here is an engineering one: a working, annotated
+  implementation that makes the evidence path explicit, together with an ingestion console that
+  allows a non-programmer to add curated knowledge and inspect what the model extracted before it
+  is stored.
+</p>
+
+<!-- ==================== 2 ==================== -->
+<h2><span class="num">2</span>Design Requirements and Scope</h2>
+<p>
+  Three requirements drove the design, and each maps to a concrete mechanism in the code.
+</p>
+<ul>
+  <li>
+    <b>Grounded answers with visible provenance.</b> Every response carries a
+    <span class="mono">source_type</span> of <span class="mono">local</span>,
+    <span class="mono">web</span>, <span class="mono">llm</span>, or
+    <span class="mono">image</span>, plus a <span class="mono">reference</span> string and a
+    <span class="mono">fallback_used</span> flag. The client renders this as a badge under the
+    answer instead of hiding the distinction.
+  </li>
+  <li>
+    <b>Curator control over stored knowledge.</b> Bulk text is not written directly to the
+    database. The extraction result is returned to the browser as an editable table, and a second
+    explicit request commits it. This separates "what the model thinks the text says" from "what the
+    institution agrees to publish".
+  </li>
+  <li>
+    <b>Conversational naturalness.</b> A single Chinese system prompt defines a named persona with
+    a regional background, an age, a speaking style, and an explicit list of forbidden phrases such
+    as "as an AI model". Retrieval context is framed as village records or outside news so that the
+    persona can introduce evidence without breaking character.
+  </li>
+</ul>
+<p>
+  Out of scope are multi-tenant access control, editorial workflow with approval roles, offline
+  speech recognition, and any quantitative evaluation against a labelled heritage question set. The
+  paper returns to these omissions in Section 10.
+</p>
+
+<!-- ==================== 3 ==================== -->
+<h2><span class="num">3</span>System Architecture</h2>
+<p>
+  The deployment consists of one Python process and one static bundle. FastAPI serves the JSON API,
+  mounts the compiled frontend under <span class="mono">/assets</span>, and returns
+  <span class="mono">index.html</span> at the root when a production build exists. Because the page
+  and the API share an origin, the client uses <span class="mono">window.location.origin</span> as
+  its base URL and no CORS configuration is needed.
+</p>
+
+<figure>
+  <img src="images/01-system-home.png" alt="Three-column workspace of the system">
+  <figcaption>
+    <b>Figure 1.</b> The default workspace. The conversation panel occupies the left column, the
+    digital-human presenter the centre, and the knowledge graph the right. Below the
+    <span class="mono">xl</span> breakpoint the three panels stack vertically; explicit minimum
+    widths prevent long answers from squeezing the avatar column.
+  </figcaption>
+</figure>
+
+<table class="data">
+  <caption><b>Table 1.</b> Component responsibilities.</caption>
+  <tr><th class="code">Component</th><th>Responsibility</th></tr>
+  <tr><td class="code">api_server/server.py</td><td>HTTP surface, request validation, server-sent-event endpoint, static assets, process-local counters.</td></tr>
+  <tr><td class="code">rag_core/rag_engine.py</td><td>Conversational pre-routing, three-tier selection, context formatting, persona prompting, provenance assembly.</td></tr>
+  <tr><td class="code">db_connection.py</td><td>Connection context manager, chunk table creation, JSONB vector persistence, cosine ranking in Python.</td></tr>
+  <tr><td class="code">gemini_embedding.py</td><td>Zhipu <span class="mono">embedding-3</span> client with process-wide throttling and retry.</td></tr>
+  <tr><td class="code">gemini_chat.py</td><td>DeepSeek chat-completion client for text and image messages; the historical module name is retained.</td></tr>
+  <tr><td class="code">gemini_search.py</td><td>Qwen generation with the <span class="mono">web_search</span> tool for the fallback tier.</td></tr>
+  <tr><td class="code">knowledge_processor.py</td><td>Model-assisted extraction of structured chunks and their individual persistence.</td></tr>
+  <tr><td class="code">knowledge_base/knowledge_loader.py</td><td>Optional Neo4j ingestion with sentence-aware chunking and a 768-dimensional vector index.</td></tr>
+  <tr><td class="code">tts_service.py</td><td>iFlytek WebSocket speech synthesis with HMAC-SHA256 request signing.</td></tr>
+  <tr><td class="code">crawler/</td><td>Scrapy spiders for heritage news and a pipeline that forwards articles to the loader.</td></tr>
+  <tr><td class="code">frontend/src/</td><td>Chat, avatar, graph, and knowledge console components; same-origin API client.</td></tr>
+</table>
+
+<p>
+  A question travels through the system as follows. The client appends the user's bubble, takes a
+  snapshot of the visible history, and posts a JSON body to <span class="mono">/chat</span>. The
+  server validates the body with a Pydantic model, and either diverts to image analysis when a
+  base64 attachment is present or calls the retriever. The retriever decides whether the input is
+  casual conversation or a knowledge question, gathers evidence, builds a prompt, and calls the
+  chat provider. The response object carries the answer and its provenance; the server records a
+  counter and returns JSON. The client then requests speech for the answer, reveals the text
+  progressively while the audio loads, and finally commits the message to the transcript.
+</p>
+<p>
+  Two architectural decisions deserve emphasis because they are easy to misread from the module
+  names. First, the online retrieval path uses PostgreSQL only; the Neo4j loader is a separate
+  ingestion path that the retriever never calls. Second, the answer is not token-streamed by the
+  model: <span class="mono">/chat</span> returns a complete JSON object, and the apparent typing
+  effect is produced by the client.
+</p>
+
+<!-- ==================== 4 ==================== -->
+<h2><span class="num">4</span>Retrieval and Answer Generation</h2>
+
+<h3><span class="num">4.1</span>Conversational pre-routing</h3>
+<p>
+  Before any database access, the query is tested against curated pattern lists covering greetings,
+  self-introduction, small talk, emotional support, care, praise, and teasing. Inputs shorter than
+  five characters, or greetings shorter than twenty characters, are treated as conversational and
+  answered with a direct persona prompt. A secondary rule catches short mood questions that contain
+  both a mood keyword and a self-reference such as "you" or the persona's name. Each matched family
+  supplies a short instruction that tells the model how to frame the reply, for example to
+  empathise before comforting and not to pivot into a heritage lecture. This stage exists because
+  retrieval for "hello" wastes an embedding call and produces an unnatural answer.
+</p>
+
+<h3><span class="num">4.2</span>Three-tier evidence selection</h3>
+
+<div class="pipeline">
+  <div class="stage">
+    <strong>Tier 1 &middot; Local knowledge</strong>
+    Embed the query; take the five nearest chunks and merge up to five keyword matches; report the
+    top vector similarity.
+  </div>
+  <div class="arrow">&rarr;</div>
+  <div class="stage">
+    <strong>Tier 2 &middot; Web search</strong>
+    Used only when the top similarity is below the threshold. Qwen answers with the
+    <span class="mono">web_search</span> tool.
+  </div>
+  <div class="arrow">&rarr;</div>
+  <div class="stage">
+    <strong>Tier 3 &middot; Model knowledge</strong>
+    Used only when search returns no text. The persona answers without retrieved context and the
+    confidence is reported as 0.1.
+  </div>
+</div>
+
+<figure>
+  <img src="images/02-qa-example.png" alt="A heritage question and its answer with a source badge" class="tall">
+  <figcaption>
+    <b>Figure 2.</b> A heritage question answered from the curated store. The badge beneath the
+    bubble reports the answering tier, and the transcript keeps earlier turns for context. The text
+    is revealed by the client while the corresponding speech is synthesized.
+  </figcaption>
+</figure>
+
+<p>
+  The local tier fuses two retrieval signals. Vector neighbours are loaded with a top-five limit,
+  and a keyword query contributes up to five additional rows whose chunk text or subject name
+  contains one of the first three whitespace-separated query terms. Duplicate texts are removed by
+  a set. Vector hits keep their cosine similarity; keyword-only hits receive a fixed score of 0.5 so
+  that a lexical coincidence cannot outrank a strong semantic match. The score reported to the
+  caller is the highest vector similarity, not the fused score, and the routing test compares that
+  value with a configurable threshold:
+</p>
+<p style="text-align:center; margin: 3mm 0 4mm;">
+  <span class="mono">if s<sub>max</sub> &ge; &tau; then local, else if web text non-empty then web, else llm</span>
+</p>
+<p>
+  with <span class="mono">&tau; = 0.75</span> by default. The similarity itself is the cosine
+  measure
+</p>
+<p style="text-align:center; margin: 3mm 0 4mm;">
+  <span class="mono">sim(q, d) = (q &middot; d) / (&#8214;q&#8214; &#8214;d&#8214;)</span>
+</p>
+<p>
+  computed with NumPy over the stored JSONB vectors. The normalisation matters because chunk
+  lengths vary; without it, longer passages would dominate the ranking.
+</p>
+
+<h3><span class="num">4.3</span>Context framing and persona</h3>
+<p>
+  All tiers share one system prompt. It establishes the persona's name, age, home county, and
+  familiarity with embroidery, watchtowers, flutes, and oral tradition; it requires short natural
+  sentences, permits the Qiang greeting "纳吉纳鲁" sparingly, and forbids meta-language about being
+  a model, a database, or a program. It also prescribes an in-character response to uncertainty:
+  the persona says that she would rather ask an elder than invent an answer. This is a deliberate
+  design choice. Refusal phrased as a cultural norm is more consistent with the character than a
+  technical disclaimer, and it preserves the epistemic boundary that the retrieval design is meant
+  to enforce.
+</p>
+<p>
+  Each tier then supplies a different context wrapper. Local evidence is introduced as records kept
+  by the village elders, web evidence as news from beyond the mountains, and the no-evidence case
+  as an ordinary conversation with no framing at all. The last six history turns are inserted
+  before the current question, with the user labelled as a guest and the persona labelled by name.
+  The history is passed as plain role and content pairs; identifiers, timestamps, and image previews
+  are stripped by the client because they carry no meaning for the model.
+</p>
+
+<h3><span class="num">4.4</span>Provenance in the response model</h3>
+<p>
+  The chat response is a validated object with six fields: answer, source type, reference,
+  confidence, fallback flag, and timestamp. Confidence is not a calibrated probability. It is the
+  top cosine similarity for the local tier, a fixed 0.5 for web answers, 0.1 for unaided model
+  answers, and 1.0 for image analysis and conversational replies. The interface uses it as a
+  ranking hint and as a colour cue, not as a statistical guarantee. Naming the value honestly is
+  part of the design: presenting an unnormalised similarity as a probability would mislead the
+  reader.
+</p>
+
+<!-- ==================== 5 ==================== -->
+<h2><span class="num">5</span>The Digital-Human Presenter</h2>
+<p>
+  The presenter is a state machine over pre-rendered clips rather than a lip-synchronised model.
+  Six clips are grouped into four roles: a welcome animation, two idle loops, two thinking clips,
+  and one talking loop. The component keeps both React state and a mutable reference to the current
+  state, because media event handlers are registered once and would otherwise close over a stale
+  value. A <span class="mono">useImperativeHandle</span> exposes three commands to the parent: start
+  thinking, start talking for a given duration, and end the conversation.
+</p>
+
+<table class="data">
+  <caption><b>Table 2.</b> Avatar states and transitions.</caption>
+  <tr><th class="code">State</th><th>Clip behaviour</th><th>Entered when</th></tr>
+  <tr><td class="code">welcome</td><td>Plays once, then hands over to an idle loop</td><td>First mount</td></tr>
+  <tr><td class="code">standby</td><td>Alternates between two idle clips on each ending</td><td>Welcome finished, or speech ended</td></tr>
+  <tr><td class="code">thinking</td><td>First clip twice, then the second clip in a loop</td><td>A question is submitted</td></tr>
+  <tr><td class="code">talking</td><td>Single talking clip stored in a loop-friendly element</td><td>Speech metadata or playback begins</td></tr>
+</table>
+
+<figure>
+  <img src="images/03-digital-ambassador.png" alt="Digital-human avatar panel" class="tall">
+  <figcaption>
+    <b>Figure 3.</b> The presenter panel. The caption below the avatar names the heritage entity
+    detected in the latest answer, which also drives the graph focus described in Section 7.
+  </figcaption>
+</figure>
+
+<p>
+  Speech is produced by a separate service. For each answer the client calls
+  <span class="mono">POST /tts</span>, receives base64 MP3, decodes it into a
+  <span class="mono">Uint8Array</span>, wraps it in a <span class="mono">Blob</span>, and plays it
+  through an <span class="mono">Audio</span> element created from an object URL. The clip duration
+  is read from <span class="mono">loadedmetadata</span> and forwarded to the avatar so that the
+  talking state lasts roughly as long as the voice; when the browser does not report a duration
+  before playback resolves, a twelve-second fallback is used. Terminal handlers revoke the object
+  URL, which prevents blob memory from accumulating across a session.
+</p>
+<p>
+  Two details in this pipeline are worth recording because they shaped the client code. Autoplay of
+  the greeting is frequently blocked by browser policy, so the component keeps a pending flag and
+  retries on the first user gesture while showing a manual replay control. And the answer bubble is
+  committed only after the audio ends, so that the visible text and the spoken text stay in step;
+  if synthesis fails, the text is still shown and the avatar returns to idle.
+</p>
+
+<!-- ==================== 6 ==================== -->
+<h2><span class="num">6</span>Knowledge Ingestion and Curation</h2>
+
+<h3><span class="num">6.1</span>Chunk model</h3>
+<p>
+  Knowledge is stored at the granularity of a semantic chunk rather than a document. A chunk is a
+  short passage about one subject along one dimension, for example the history of a named
+  embroidery style or the region in which a festival is practised. The schema is shown in Table 3.
+</p>
+
+<table class="data">
+  <caption><b>Table 3.</b> Storage schema of <span class="mono">non_heritage_knowledge_chunks</span>.</caption>
+  <tr><th class="code">Column</th><th>Type</th><th>Role</th></tr>
+  <tr><td class="code">chunk_id</td><td>VARCHAR(50), primary key</td><td>Identifier of the form <span class="mono">QX_&lt;timestamp&gt;_&lt;counter&gt;</span></td></tr>
+  <tr><td class="code">source_entity</td><td>VARCHAR(100)</td><td>Subject name, indexed</td></tr>
+  <tr><td class="code">entity_type</td><td>VARCHAR(50)</td><td>Project, inheritor, festival, place, craft, other; indexed</td></tr>
+  <tr><td class="code">topic_tag</td><td>VARCHAR(50)</td><td>Definition, history, process, value, works, bearer, region, other; indexed</td></tr>
+  <tr><td class="code">embedding_text</td><td>TEXT</td><td>The passage that is embedded and shown to the model</td></tr>
+  <tr><td class="code">relation_desc</td><td>TEXT</td><td>Free-text relations, parsed by the graph view</td></tr>
+  <tr><td class="code">source_url</td><td>TEXT</td><td>Provenance of the passage</td></tr>
+  <tr><td class="code">embedding</td><td>JSONB</td><td>Vector serialized as JSON text</td></tr>
+  <tr><td class="code">created_at, updated_at</td><td>TIMESTAMP</td><td>Insert and last-write times</td></tr>
+</table>
+
+<h3><span class="num">6.2</span>Browsing the curated store</h3>
+<p>
+  Stored chunks can be listed with pagination and filtered on the client. The list shows the subject,
+  entity type, topic tag, relation description, and source link, which is enough for a curator to
+  spot duplicates or malformed entries without direct database access.
+</p>
+
+<figure>
+  <img src="images/04-knowledge-browse.png" alt="Knowledge browsing table">
+  <figcaption>
+    <b>Figure 4.</b> Browsing stored chunks. The count in the header is the total row count returned
+    by the API, independent of the page size.
+  </figcaption>
+</figure>
+
+<h3><span class="num">6.3</span>Structured single-entry upload</h3>
+<p>
+  The simplest ingestion path asks the curator for every field explicitly. Nothing is inferred. The
+  embedding text is sent to the embedding provider, and the returned vector is written with the
+  metadata in a single upsert. The identifier combines a timestamp with a process-local counter, and
+  the insert uses <span class="mono">ON CONFLICT (chunk_id) DO UPDATE</span>, so re-ingesting the
+  same identifier updates a row instead of raising an error.
+</p>
+
+<figure>
+  <img src="images/05-single-upload.png" alt="Single-entry upload form">
+  <figcaption>
+    <b>Figure 5.</b> Structured upload. Entity type and topic tag are chosen from fixed lists, which
+    keeps the vocabulary used by the graph view and by retrieval consistent across curators.
+  </figcaption>
+</figure>
+
+<h3><span class="num">6.4</span>Model-assisted bulk extraction</h3>
+<p>
+  Bulk text follows a two-phase protocol. In the preview phase the raw text is placed in a prompt
+  that fixes the output contract: a JSON array whose objects contain subject, entity type, topic
+  tag, embedding text, relation description, and source URL, with the entity and topic vocabularies
+  restated. The model is asked to write the embedding text as a self-contained passage that begins
+  with the subject name and the topic dimension. Temperature is lowered to 0.3 for this call
+  because the task is extraction, not conversation.
+</p>
+<p>
+  The return value is not trusted blindly. Because the model may wrap the array in prose, the
+  processor isolates the outermost bracketed block with a regular expression before parsing, and a
+  parse failure produces an empty list rather than an exception. The parsed objects are returned to
+  the browser, where the curator can edit or delete rows. Only an explicit confirmation request
+  embeds and stores them. Persistence is per chunk: a failure on one row is logged and the remaining
+  rows are still attempted, and the response reports the saved count against the submitted count.
+</p>
+
+<figure>
+  <img src="images/06-bulk-upload.png" alt="Bulk upload and extracted chunk preview">
+  <figcaption>
+    <b>Figure 6.</b> Bulk ingestion. The progress indicator is driven by hand-set milestone values
+    in the client rather than by server events; the backend performs the extraction in one blocking
+    call.
+  </figcaption>
+</figure>
+
+<h3><span class="num">6.5</span>The optional graph loader</h3>
+<p>
+  A second loader targets Neo4j. It splits text with a 500-character window and a
+  50-character overlap, and it backs the window boundary up to the nearest sentence-ending
+  punctuation when one is found within the last hundred characters. Entities are extracted with
+  regular-expression rules for bearers, projects, and Sichuan place names, then written as
+  <span class="mono">Inheritor</span>, <span class="mono">HeritageProject</span>, and
+  <span class="mono">Location</span> nodes with <span class="mono">INHERITS</span> edges. Chunk
+  embeddings are stored in a cosine vector index of dimension 768. This path is not used by the
+  online retriever; it exists for deployments that want a graph-native store and a
+  <span class="mono">queryNodes</span> search instead of the PostgreSQL path.
+</p>
+
+<!-- ==================== 7 ==================== -->
+<h2><span class="num">7</span>Knowledge-Graph Visualisation</h2>
+<p>
+  The graph view is derived on the client from the chunk list rather than from a dedicated graph
+  endpoint. Each chunk contributes a typed node keyed by its subject name; a relation description
+  containing a related project name contributes an edge. Colour encodes entity type and radius
+  encodes degree, so a subject that appears in many relations is visually prominent. Node and edge
+  collections are deduplicated with maps, which keeps the simulation stable when the same subject
+  appears in several chunks.
+</p>
+
+<figure>
+  <img src="images/07-knowledge-graph.png" alt="Force-directed knowledge graph" class="tall">
+  <figcaption>
+    <b>Figure 7.</b> Force-directed graph of stored entities with a colour legend. Labels are drawn
+    on the canvas at a size scaled by the current zoom so that they remain readable when the layout
+    is panned or magnified.
+  </figcaption>
+</figure>
+
+<p>
+  When a chat answer mentions one of the known heritage entities, the parent component stores it and
+  the graph re-centres on the matching node, which links the conversation and the structural view.
+  If the chunk request fails, the component falls back to a small illustrative graph so that the
+  panel never renders empty. The fallback is clearly a demonstration, not stored knowledge, and the
+  code labels it as such.
+</p>
+
+<!-- ==================== 8 ==================== -->
+<h2><span class="num">8</span>Multimodal Question Answering</h2>
+<p>
+  An attached image is read in the browser, converted to a data URL, and posted as a base64 payload
+  with its MIME type. The presence of that field is the switch: the server bypasses retrieval
+  entirely and sends a multimodal message to the configured vision model. The user's text becomes
+  the instruction, and a dedicated system prompt asks the persona to describe the image honestly,
+  to connect it to Qiang culture only when the connection is real, and to state plainly when a
+  detail is uncertain.
+</p>
+
+<figure>
+  <img src="images/08-image-upload.png" alt="Image attachment in the chat composer">
+  <figcaption>
+    <b>Figure 8.</b> Image attachment. The selected file is previewed in the composer and can be
+    removed before sending; the transcript keeps the preview so the question remains interpretable
+    afterwards.
+  </figcaption>
+</figure>
+
+<p>
+  This path is intentionally not retrieval-grounded. A photograph of an object is not a query
+  against the chunk store, and pretending otherwise would produce misleading provenance. The
+  response therefore reports <span class="mono">source_type = image</span> with confidence 1.0, and
+  the interface displays it as a distinct category. The trade-off is that image answers are only as
+  reliable as the vision model, which is precisely why they are labelled differently.
+</p>
+
+<!-- ==================== 9 ==================== -->
+<h2><span class="num">9</span>Implementation and Deployment</h2>
+
+<h3><span class="num">9.1</span>Backend surface</h3>
+<table class="data">
+  <caption><b>Table 4.</b> HTTP endpoints exposed by the FastAPI application.</caption>
+  <tr><th class="code">Method and path</th><th>Purpose</th></tr>
+  <tr><td class="code">GET /</td><td>Built single-page application, or API metadata when no build is present</td></tr>
+  <tr><td class="code">GET /health</td><td>Liveness response with version and timestamp</td></tr>
+  <tr><td class="code">POST /chat</td><td>Answer a question, optionally with a base64 image</td></tr>
+  <tr><td class="code">POST /chat/stream</td><td>Per-character server-sent events; not used by the current client</td></tr>
+  <tr><td class="code">POST /tts</td><td>Base64 MP3 for a text input</td></tr>
+  <tr><td class="code">POST /knowledge-base/preview</td><td>Extract chunks from raw text without writing</td></tr>
+  <tr><td class="code">POST /knowledge-base/confirm</td><td>Embed and store confirmed chunks</td></tr>
+  <tr><td class="code">POST /knowledge-base/single</td><td>Embed and store one structured chunk</td></tr>
+  <tr><td class="code">POST /knowledge-base/bulk</td><td>Extract and store in one call</td></tr>
+  <tr><td class="code">GET /knowledge-base/chunks</td><td>Paginated stored chunks with total count</td></tr>
+  <tr><td class="code">GET, POST /knowledge-base</td><td>JSON-file demonstration store, separate from the database</td></tr>
+  <tr><td class="code">GET /stats, POST /reset-stats</td><td>Process-local counters for local, web, and model answers</td></tr>
+</table>
+
+<p>
+  Request and response bodies are declared as Pydantic models with field descriptions, which gives
+  the service a typed contract and a generated OpenAPI page at <span class="mono">/docs</span>. Two
+  stores coexist: the SQL chunk table used by retrieval, and a JSON file used by the simple
+  knowledge list endpoints. The duplication is a historical artefact and is disclosed rather than
+  hidden.
+</p>
+
+<h3><span class="num">9.2</span>Provider adapters</h3>
+<p>
+  Each external provider is isolated behind a small adapter that owns throttling, retries, response
+  parsing, and error normalisation. The chat and embedding clients share a class-level timestamp so
+  that the minimum interval applies across instances rather than per object. Table 5 summarises the
+  parameters that are actually present in the code.
+</p>
+
+<table class="data">
+  <caption><b>Table 5.</b> Provider adapters and their configured behaviour.</caption>
+  <tr><th class="code">Adapter</th><th>Endpoint and model</th><th>Retry and timing</th></tr>
+  <tr><td class="code">DeepSeek chat</td><td><span class="mono">/v1/chat/completions</span>, <span class="mono">deepseek-chat</span></td><td>Three attempts; 429 backoff <span class="mono">min(2^(n+1), 20)</span> s; request timeout 120 s, vision 180 s</td></tr>
+  <tr><td class="code">Zhipu embedding</td><td><span class="mono">/api/paas/v4/embeddings</span>, <span class="mono">embedding-3</span></td><td>Five attempts; 429 backoff <span class="mono">min(2^(n+1), 30)</span> s; 1 s minimum interval</td></tr>
+  <tr><td class="code">Qwen search</td><td><span class="mono">/api/v1/services/aigc/text-generation/generation</span>, <span class="mono">qwen-plus-latest</span></td><td>Single attempt; 60 s timeout; failure becomes "no web results"</td></tr>
+  <tr><td class="code">iFlytek TTS</td><td><span class="mono">wss://tts-api.xfyun.cn/v2/tts</span>, voice <span class="mono">x4_lingxiaoxuan</span></td><td>HMAC-SHA256 signed URL; collects MP3 frames until the final status</td></tr>
+</table>
+
+<p>
+  The chat client accepts a <span class="mono">tools</span> argument for interface compatibility but
+  discards it; tool calling is not implemented in this adapter. The search client uses the provider's
+  <span class="mono">web_search</span> tool in the request payload, and any non-200 response is
+  converted into an empty result so that the routing logic can fall through to the next tier without
+  exception handling at the call site.
+</p>
+
+<h3><span class="num">9.3</span>Frontend composition</h3>
+<p>
+  The client is a React 19 application built with Vite 7 and styled with Tailwind. State that is
+  shared between panels lives in the root component: the entity mentioned in the latest answer, the
+  visibility of the knowledge console, and an imperative handle to the avatar. The chat component
+  owns its transcript, attachment state, audio element, and loading ticker. The API layer is a
+  single axios instance with a 180-second timeout, which accommodates a language-model call followed
+  by a web search in the same request.
+</p>
+<p>
+  The transcript uses React Markdown for answer rendering, an auto-scroll sentinel for pinning the
+  newest message, and a set of refs to keep media callbacks idempotent: a flag prevents
+  <span class="mono">onAudioStart</span> from firing twice for the same clip, a ref guards the
+  greeting against double seeding under React's strict-mode mount cycle, and a pending flag records
+  a blocked autoplay so the first gesture can retry it.
+</p>
+
+<h3><span class="num">9.4</span>Configuration and credential handling</h3>
+<p>
+  All provider keys, database settings, thresholds, and server options are read from environment
+  variables with defaults in <span class="mono">config.py</span>. The coursework package contains an
+  English <span class="mono">.env.example</span> with placeholders only; the working
+  <span class="mono">.env</span> used during development is excluded. Knowledge of a deployment's
+  database host or password is not required to read, build, or assess the code, which is the point
+  of separating configuration from implementation.
+</p>
+
+<!-- ==================== 10 ==================== -->
+<h2><span class="num">10</span>Discussion</h2>
+
+<h3><span class="num">10.1</span>What the design buys</h3>
+<p>
+  The strongest property of the implementation is that evidence and answer are separated in the
+  response contract. Because the tier is explicit, a curator can inspect the counter endpoint and
+  see how often the system answered from stored knowledge, and a reader can see on screen whether a
+  statement came from the institution or from a live search. This is more useful than a single
+  opaque answer, even though it does not by itself guarantee correctness.
+</p>
+<p>
+  The two-phase bulk ingestion protocol is the second useful property. Extraction by a language
+  model is unreliable in ways that are hard to predict, and a human review step turns an
+  all-or-nothing import into a supervised one. The per-chunk write policy means a single bad row
+  does not discard an entire batch.
+</p>
+
+<h3><span class="num">10.2</span>Costs visible by inspection</h3>
+<p>
+  Several costs follow directly from the code and can be stated without a benchmark. Vector search
+  loads every embedded row into the application and ranks it in Python, so query cost grows linearly
+  with table size and the database does no index-assisted vector filtering. Keyword search
+  interpolates user terms into a <span class="mono">LIKE</span> clause with an f-string, which is
+  acceptable only under the supervised, single-tenant conditions of this coursework and would need
+  bound parameters in any exposed deployment. The chat request is blocking from the client's point
+  of view, with a three-minute ceiling; a slow model plus a slow search can therefore hold a request
+  open for most of that window. Statistics are process-local and reset on restart. No route has
+  authentication, and the write routes for knowledge are as open as the read routes.
+</p>
+
+<h3><span class="num">10.3</span>Threats to validity</h3>
+<p>
+  No labelled question set was constructed, so this paper makes no accuracy claim. The threshold
+  of 0.75 is a configuration default, not a tuned operating point; whether it is appropriate for
+  <span class="mono">embedding-3</span> on Chinese heritage text would require measurement. The
+  confidence field is a similarity or a constant, not a calibrated probability. The graph view
+  derives structure from free-text relations with a regular expression, so its edges are a
+  presentation aid rather than a verified ontology. Finally, the screenshots document one running
+  deployment on one dataset; they demonstrate that the interface works, not that the knowledge base
+  is complete.
+</p>
+<p>
+  The honest conclusion is that the system is a well-structured prototype with explicit provenance,
+  a supervised ingestion path, and a clear boundary between what is retrieved and what is generated.
+  It is not an evaluated heritage expert.
+</p>
+
+<!-- ==================== 11 ==================== -->
+<h2><span class="num">11</span>Conclusion and Future Work</h2>
+<p>
+  This paper described a complete question-answering application for Qiang intangible cultural
+  heritage, implemented as a FastAPI service and a React client with an annotated codebase. The
+  system routes each question through a curated knowledge base, a web-search fallback, and a final
+  model-only tier, and it reports which tier answered. Knowledge is stored as semantic chunks with
+  subject, type, topic, relation, and embedding fields; ingestion supports both structured manual
+  entry and model-assisted extraction with mandatory human confirmation. A digital-human presenter
+  and synthesized speech carry the conversational state, and a client-derived graph exposes the
+  structure of the stored knowledge.
+</p>
+<p>
+  Four directions follow naturally from the limitations. Moving similarity search into the database
+  with a vector index would remove the linear scan. Introducing a labelled evaluation set of
+  heritage questions would allow the threshold to be tuned and the fallback rate to be reported.
+  Adding parameter binding to the keyword query and an authentication layer to the write routes
+  would make the service safe to expose. Replacing the presentation graph with a curated ontology
+  would turn the visualisation into a queryable structure rather than a derived sketch.
+</p>
+
+<!-- ==================== REFERENCES ==================== -->
+<h2><span class="num">12</span>References</h2>
+<ol class="references">
+  <li>Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, L., and Polosukhin, I. (2017). Attention is all you need. <i>Advances in Neural Information Processing Systems</i>, 30.</li>
+  <li>Lewis, P., Perez, E., Piktus, A., Petroni, F., Karpukhin, V., Goyal, N., Kuttler, H., Lewis, M., Yih, W., Rockt&auml;schel, T., Riedel, S., and Kiela, D. (2020). Retrieval-augmented generation for knowledge-intensive NLP tasks. <i>Advances in Neural Information Processing Systems</i>, 33.</li>
+  <li>DeepSeek. API documentation. <span class="mono">https://platform.deepseek.com/api_docs</span></li>
+  <li>Zhipu AI. Open platform API reference. <span class="mono">https://open.bigmodel.cn/dev/api</span></li>
+  <li>iFlytek. Online text-to-speech WebSocket API. <span class="mono">https://www.xfyun.cn/doc/tts/online_tts/API.html</span></li>
+  <li>Scrapy developers. Scrapy documentation. <span class="mono">https://docs.scrapy.org/</span></li>
+</ol>
+
+<div class="signature">
+  <div class="name">NE2301 ShengruiDu StevenDu <span class="cn">杜晟瑞</span> 202384014024</div>
+  <div class="date">November 2026</div>
+</div>
+
+</div>
+</body>
+</html>
